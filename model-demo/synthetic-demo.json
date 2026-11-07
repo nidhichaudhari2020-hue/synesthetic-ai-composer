@@ -1,0 +1,109 @@
+{
+  "tokenizer": "melody-grid-v1",
+  "synthetic_demo": true,
+  "seed": 42,
+  "sequence_length": 64,
+  "architecture": {
+    "embedding_dim": 64,
+    "hidden_dim": 32,
+    "layers": 2
+  },
+  "train_examples": 30,
+  "validation_examples": 6,
+  "runtime": {
+    "torch": "2.9.1",
+    "music21": "9.9.1",
+    "numpy": "2.5.4"
+  },
+  "train_files": [
+    {
+      "name": "synthetic-0002.mid",
+      "sha256": "42dfc955e60206851183af3c81305a8234fa15d7e32e5700bc36c8dca40988ae"
+    },
+    {
+      "name": "synthetic-0008.mid",
+      "sha256": "5105372e01058bb761b53d94e33c4f5cbbdb30470071439bb51d35b9db8f0f17"
+    },
+    {
+      "name": "synthetic-0009.mid",
+      "sha256": "a500aeb1b4a80d94dbe5c633622db670c9bc119753ae7567bd09d56b59580685"
+    },
+    {
+      "name": "synthetic-0006.mid",
+      "sha256": "3291df672c0153c25bfe568820da96216ae7f584f6ca2f9cfc080707d478a91a"
+    },
+    {
+      "name": "synthetic-0011.mid",
+      "sha256": "f800443ec39d597948a3ca761ef83d05f680314dfb32d1c42575a7187c08bc29"
+    },
+    {
+      "name": "synthetic-0003.mid",
+      "sha256": "75c0cc65cd58a4e207a7ac88bf1e82f5cddc8bf26965a736cadcd5d22da1bfd5"
+    },
+    {
+      "name": "synthetic-0004.mid",
+      "sha256": "790d9f8bbcf6e2e6ea1c2ca917e9a7ad8f98eb300dda535d9ac54be464a868c0"
+    },
+    {
+      "name": "synthetic-0000.mid",
+      "sha256": "c3366f99470d132e1b6bd348caac2b01b6ad6f26f3d22e656af54ff70789c9dc"
+    },
+    {
+      "name": "synthetic-0001.mid",
+      "sha256": "62c7af3e959160f413f132dcfd048bec6cafac28e037c0b537671cacf0221824"
+    },
+    {
+      "name": "synthetic-0010.mid",
+      "sha256": "9e543a53a6755305d8a7ae5429d313c84c04fb6fb010b5a5ecea148d6540dc81"
+    }
+  ],
+  "validation_files": [
+    {
+      "name": "synthetic-0007.mid",
+      "sha256": "d3ec3cb0aa8c662a16849babef49c641a4599e988a3cd87894e00d74e227986e"
+    },
+    {
+      "name": "synthetic-0005.mid",
+      "sha256": "9d08eaf5a9183e11853d01110408c4a77a4daba9f5d096296495820f71c0cf3c"
+    }
+  ],
+  "history": [
+    {
+      "epoch": 1,
+      "train_cross_entropy": 3.5878660360972088,
+      "validation_cross_entropy": 3.534802198410034,
+      "validation_perplexity": 34.288231776650505
+    },
+    {
+      "epoch": 2,
+      "train_cross_entropy": 3.487834167480469,
+      "validation_cross_entropy": 3.3865807056427,
+      "validation_perplexity": 29.564688870513407
+    },
+    {
+      "epoch": 3,
+      "train_cross_entropy": 3.307458925247192,
+      "validation_cross_entropy": 3.1369478702545166,
+      "validation_perplexity": 23.03345836203802
+    },
+    {
+      "epoch": 4,
+      "train_cross_entropy": 3.0388167540232343,
+      "validation_cross_entropy": 2.859238624572754,
+      "validation_perplexity": 17.448237218922507
+    },
+    {
+      "epoch": 5,
+      "train_cross_entropy": 2.7762327671051024,
+      "validation_cross_entropy": 2.650413751602173,
+      "validation_perplexity": 14.159896113227335
+    },
+    {
+      "epoch": 6,
+      "train_cross_entropy": 2.5987971782684327,
+      "validation_cross_entropy": 2.5466721057891846,
+      "validation_perplexity": 12.764553936090964
+    }
+  ],
+  "checkpoint_sha256": "bcbb2c1a1e5bc680e234ef129730924d79131700c83e0b658c54701b5a01042d"
+}

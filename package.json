@@ -1,0 +1,21 @@
+{
+  "name": "auralis",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "dev": "node scripts/serve.mjs",
+    "test": "node --test web/tests/*.test.mjs hosted/tests/*.test.mjs"
+  },
+  "dependencies": {
+    "@auth0/auth0-spa-js": "^2.4.1",
+    "firebase": "^13.2.0",
+    "three": "^0.180.0",
+    "zod": "^4.1.11"
+  },
+  "devDependencies": {
+    "esbuild": "^0.25.10",
+    "prettier": "^3.6.2"
+  }
+}

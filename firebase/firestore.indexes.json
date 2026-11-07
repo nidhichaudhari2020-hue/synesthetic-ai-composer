@@ -1,0 +1,6 @@
+{
+  "indexes": [],
+  "fieldOverrides": [
+    { "collectionGroup": "tracks", "fieldPath": "tokens", "indexes": [] }
+  ]
+}

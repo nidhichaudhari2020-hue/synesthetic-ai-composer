@@ -1,0 +1,9 @@
+{
+  "mode": "firebase",
+  "firebase": {
+    "projectId": "auralis-nidhi-composer",
+    "appId": "1:602122279638:web:749f76fe2e68a2f8fc0777",
+    "apiKey": "AIzaSyDLCJc1slXG1AUAt1BCuNlR52sla19NBAY",
+    "authDomain": "auralis-nidhi-composer.firebaseapp.com"
+  }
+}

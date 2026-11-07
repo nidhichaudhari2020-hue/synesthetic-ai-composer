@@ -1,0 +1,61 @@
+name: auralis
+services:
+  postgres:
+    image: postgres:17.11-bookworm
+    environment:
+      POSTGRES_DB: auralis
+      POSTGRES_USER: local_migrator
+      POSTGRES_PASSWORD: ${POSTGRES_ADMIN_PASSWORD:?Set POSTGRES_ADMIN_PASSWORD in .env}
+      APP_DB_PASSWORD: ${APP_DB_PASSWORD:?Set APP_DB_PASSWORD in .env}
+    ports: ["127.0.0.1:5432:5432"]
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./infra/postgres/schema.sql:/opt/auralis/schema.sql:ro
+      - ./infra/postgres/local-init.sh:/docker-entrypoint-initdb.d/01-auralis.sh:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U local_migrator -d auralis"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+  redis:
+    image: redis:7.4.7-alpine
+    command: ["redis-server", "--appendonly", "yes", "--maxmemory", "128mb", "--maxmemory-policy", "noeviction"]
+    ports: ["127.0.0.1:6379:6379"]
+    volumes: ["redis_data:/data"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+  api:
+    profiles: ["api"]
+    build: ./backend
+    environment:
+      ENVIRONMENT: development
+      DATABASE_URL: postgresql://app_runtime:${APP_DB_PASSWORD}@postgres:5432/auralis
+      REDIS_URL: redis://redis:6379/0
+      CHECKPOINT_PATH: /models/composer.pt
+      ALLOWED_HOSTS: '["localhost","127.0.0.1","api"]'
+      OIDC_ISSUER: ${OIDC_ISSUER:-}
+      OIDC_AUDIENCE: ${OIDC_AUDIENCE:-}
+      OIDC_JWKS_URL: ${OIDC_JWKS_URL:-}
+      CORS_ORIGINS: ${CORS_ORIGINS:-[]}
+      TRUSTED_PROXY_CIDRS: '[]'
+      RATE_LIMIT_SECRET: ${RATE_LIMIT_SECRET:-}
+      METRICS_TOKEN: ${METRICS_TOKEN:-}
+      TURNSTILE_SECRET: ${TURNSTILE_SECRET:-}
+      TURNSTILE_HOSTNAME: ${TURNSTILE_HOSTNAME:-}
+      GENERATION_TIMEOUT_SECONDS: ${GENERATION_TIMEOUT_SECONDS:-45}
+      GENERATION_CONCURRENCY: ${GENERATION_CONCURRENCY:-1}
+    ports: ["127.0.0.1:8080:8000"]
+    volumes: ["./models:/models:ro"]
+    read_only: true
+    tmpfs: ["/tmp:size=64m,noexec,nosuid"]
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    depends_on:
+      postgres: {condition: service_healthy}
+      redis: {condition: service_healthy}
+volumes:
+  postgres_data:
+  redis_data:

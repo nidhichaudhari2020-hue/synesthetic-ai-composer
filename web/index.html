@@ -1,0 +1,450 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#0a1113" />
+    <meta
+      name="description"
+      content="Auralis. Compose a little wonder. An interactive music studio with a living, sound-reactive particle universe."
+    />
+    <title>Auralis — Sound, given form</title>
+    <link rel="stylesheet" href="/style.css" />
+    <script type="module" src="/app.js"></script>
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="/" aria-label="Auralis home"
+        ><span class="brand-mark">a</span>auralis</a
+      >
+      <nav aria-label="Main navigation">
+        <button class="nav active" data-tab="studio">Studio</button
+        ><button class="nav" data-tab="library">
+          My compositions <span id="library-count">0</span></button
+        ><button class="nav" id="about-open">
+          How it works <span>↗</span>
+        </button>
+      </nav>
+      <div class="header-right">
+        <span class="mode-pill"
+          ><i></i><span id="mode-label">Interactive demo</span></span
+        ><button
+          class="avatar"
+          id="account"
+          aria-label="Account and connection status"
+        >
+          •
+        </button>
+      </div>
+    </header>
+    <main>
+      <section id="studio-view">
+        <div class="intro">
+          <div>
+            <p class="eyebrow"><span></span> SYNESTHETIC MUSIC STUDIO</p>
+            <h1>Hear a melody <em>take shape.</em></h1>
+            <p class="intro-copy">
+              Start with four chords. Generate a melody and watch its
+              frequencies move the light.
+            </p>
+            <div class="audition-actions">
+              <button
+                type="button"
+                class="audition-button"
+                id="audition-sample"
+              >
+                ▶ Hear the model · 0:40
+              </button>
+              <button
+                type="button"
+                class="model-notes"
+                id="model-notes"
+                aria-haspopup="dialog"
+              >
+                Model notes ↗
+              </button>
+            </div>
+          </div>
+          <button class="text-button" id="reset">
+            <span>↺</span> Start fresh
+          </button>
+        </div>
+        <div class="workspace">
+          <section
+            class="universe"
+            aria-label="Interactive audio visualization"
+          >
+            <canvas
+              id="universe"
+              aria-label="Mint and violet particles forming an orb, galaxy, or brain"
+            ></canvas>
+            <div class="universe-top">
+              <span class="live-label"><i></i> LIVING CANVAS</span
+              ><button
+                id="motion-toggle"
+                class="icon-button"
+                aria-label="Pause visual motion"
+              >
+                Ⅱ
+              </button>
+            </div>
+            <div class="canvas-coordinate">SONIC FIELD / 001</div>
+            <div class="orb-caption">
+              <span id="state-eyebrow">A MOMENT OF POSSIBILITY</span>
+              <h2 id="state-title">Everything starts with a spark.</h2>
+              <p id="state-copy">Shape your sound. See where it takes you.</p>
+            </div>
+            <div class="canvas-bottom">
+              <div class="state-switch" aria-label="Particle shape">
+                <button class="selected" data-shape="orb">Orb</button
+                ><button data-shape="galaxy">Galaxy</button
+                ><button data-shape="brain">Mind</button>
+              </div>
+              <span class="canvas-tip"
+                ><span>✧</span> Move closer. It’s listening.</span
+              >
+            </div>
+          </section>
+          <aside class="composer">
+            <div class="panel-title">
+              <div>
+                <p class="eyebrow">YOUR NEXT COMPOSITION</p>
+                <h2>Set the feeling.</h2>
+              </div>
+              <span class="spark">✳</span>
+            </div>
+            <form id="compose-form">
+              <fieldset>
+                <legend>01 <span>Choose a starting point</span></legend>
+                <div class="mood-grid">
+                  <button type="button" class="mood selected" data-mood="dream">
+                    <span>☾</span>Dreamscape</button
+                  ><button type="button" class="mood" data-mood="drift">
+                    <span>≈</span>Slow drift</button
+                  ><button type="button" class="mood" data-mood="bloom">
+                    <span>✳</span>First bloom</button
+                  ><button type="button" class="mood" data-mood="night">
+                    <span>✧</span>After hours
+                  </button>
+                </div>
+              </fieldset>
+              <fieldset class="chord-field">
+                <legend>
+                  02 <span>Plant a musical seed</span
+                  ><span
+                    class="info"
+                    title="A four-chord progression guides the composition"
+                    >i</span
+                  >
+                </legend>
+                <div class="chords" id="chord-controls"></div>
+                <p class="field-hint">Four chords. Endless directions.</p>
+              </fieldset>
+              <fieldset>
+                <legend>03 <span>Find your balance</span></legend>
+                <div class="range-title">
+                  <label for="temperature">Creativity</label
+                  ><output for="temperature" id="temperature-value"
+                    >0.85</output
+                  >
+                </div>
+                <input
+                  id="temperature"
+                  type="range"
+                  min="0.2"
+                  max="1.5"
+                  step="0.05"
+                  value="0.85"
+                />
+                <div class="range-labels">
+                  <span>Familiar</span><span>Unexpected</span>
+                </div>
+              </fieldset>
+              <div class="two-cols">
+                <div>
+                  <label class="field-label" for="instrument">Instrument</label
+                  ><select id="instrument">
+                    <option value="piano">Soft piano</option>
+                    <option value="synth">Analog synth</option>
+                    <option value="strings">Warm strings</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="field-label" for="tempo"
+                    >Tempo <span>BPM</span></label
+                  >
+                  <div class="number-stepper">
+                    <button
+                      type="button"
+                      id="tempo-minus"
+                      aria-label="Decrease tempo"
+                    >
+                      −</button
+                    ><input
+                      id="tempo"
+                      type="number"
+                      min="50"
+                      max="180"
+                      value="92"
+                      aria-label="Tempo in beats per minute"
+                    /><button
+                      type="button"
+                      id="tempo-plus"
+                      aria-label="Increase tempo"
+                    >
+                      +
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <div class="length-row">
+                <span>Composition length</span>
+                <div class="segmented">
+                  <button type="button" data-bars="16" class="selected">
+                    16 bars</button
+                  ><button type="button" data-bars="32">32 bars</button>
+                </div>
+              </div>
+              <div id="turnstile"></div>
+              <button class="generate" id="generate" type="submit" disabled>
+                <span>✧</span
+                ><span id="generate-label">Create a composition</span
+                ><span>↗</span>
+              </button>
+              <p class="demo-note" id="demo-note">
+                Demo LSTM · Trained on original exercises
+              </p>
+            </form>
+          </aside>
+        </div>
+        <p id="save-warning" class="save-warning" role="status" hidden></p>
+        <section class="playback" aria-label="Music player">
+          <button class="play-main" id="play" aria-label="Play composition">
+            ▶
+          </button>
+          <div class="track-info">
+            <span class="eyebrow" id="track-eyebrow"
+              >FEATURED MODEL OUTPUT</span
+            >
+            <h3 id="track-title">Somewhere, softly</h3>
+            <p id="track-meta">
+              Soft piano <span>·</span> 96 BPM <span>·</span> 16 bars
+            </p>
+          </div>
+          <div class="wave-area">
+            <canvas
+              id="waveform"
+              role="img"
+              aria-label="Melody timeline, with time from left to right and pitch from low to high"
+            ></canvas>
+            <div class="progress-track"><div id="progress-fill"></div></div>
+            <div class="time-labels">
+              <span id="elapsed">0:00</span><span id="duration">0:40</span>
+            </div>
+          </div>
+          <div class="player-actions">
+            <button
+              id="volume-toggle"
+              class="icon-button"
+              aria-label="Mute audio"
+            >
+              ♪</button
+            ><input
+              id="volume"
+              type="range"
+              aria-label="Volume"
+              min="0"
+              max="1"
+              step="0.05"
+              value="0.65"
+            /><span class="player-divider"></span
+            ><button id="download" class="download-button">
+              ↓ <span>MIDI</span>
+            </button>
+            <button
+              id="download-audio"
+              class="download-button"
+              aria-label="Download WAV audio"
+            >
+              ↓ <span>WAV</span>
+            </button>
+          </div>
+        </section>
+        <div class="below-player">
+          <p>
+            <span class="status-dot"></span
+            ><span id="engine-note">Neural demo engine</span
+            ><span class="divider-dot">·</span
+            ><span id="engine-location">Made in your browser</span>
+          </p>
+          <p>Listen with curiosity. Create without limits.</p>
+        </div>
+        <section class="engineering" aria-labelledby="engineering-title">
+          <div class="engineering-heading">
+            <div>
+              <p class="eyebrow">BENEATH THE SURFACE</p>
+              <h2 id="engineering-title">Engineering <em>Breakdown.</em></h2>
+            </div>
+            <p>A small instrument. A deliberate architecture.</p>
+          </div>
+          <div class="engineering-grid">
+            <article class="engineering-card">
+              <div class="engineering-card-top">
+                <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M8 8l16 8M8 24l16-8M8 8v16"/><circle cx="8" cy="8" r="3"/><circle cx="8" cy="24" r="3"/><circle cx="24" cy="16" r="3"/></svg>
+                <span>01 / LEARN</span>
+              </div>
+              <h3>Deep Learning Pipeline</h3>
+              <p><strong>MIDI-to-Sequence Vectorization</strong> uses music21 to map the upper melodic voice to integer pitch, rest and hold tokens on a 16th-note grid.</p>
+              <p>A two-layer <strong>PyTorch LSTM</strong> learns from original synthetic exercises with categorical cross-entropy. <strong>Temperature-based Token Sampling</strong> controls how adventurous the next note can be.</p>
+              <div class="engineering-detail"><span>REPRESENTATION</span>39 tokens · 16 steps per bar</div>
+            </article>
+            <article class="engineering-card">
+              <div class="engineering-card-top">
+                <svg viewBox="0 0 32 32" aria-hidden="true"><rect x="8" y="8" width="16" height="16" rx="3"/><path d="M12 3v5m8-5v5M12 24v5m8-5v5M3 12h5m-5 8h5m16-8h5m-5 8h5M13 13h6v6h-6z"/></svg>
+                <span>02 / COMPOSE</span>
+              </div>
+              <h3>Edge Inference &amp; Performance</h3>
+              <p><strong>Browser Web Workers</strong> run the exported model weights off the main thread. In this studio, inference happens on your device.</p>
+              <p>Keeping inference off the UI thread leaves room for Three.js animation and Web Audio playback. The canvas targets <strong>smooth 60 fps animation</strong>; actual frame rate depends on your device and display.</p>
+              <div class="engineering-detail"><span>EXECUTION</span>Local inference · responsive controls</div>
+            </article>
+            <article class="engineering-card">
+              <div class="engineering-card-top">
+                <svg viewBox="0 0 32 32" aria-hidden="true"><ellipse cx="16" cy="7" rx="10" ry="4"/><path d="M6 7v18c0 2.2 4.5 4 10 4s10-1.8 10-4V7M6 16c0 2.2 4.5 4 10 4s10-1.8 10-4"/></svg>
+                <span>03 / KEEP</span>
+              </div>
+              <h3>State &amp; Storage</h3>
+              <p>A <strong>local-first</strong> flow keeps guest compositions in <strong>LocalStorage</strong> in this browser. MIDI and WAV exports let you take a composition with you.</p>
+              <p>After <strong>verified sign-in</strong>, new compositions save to an <strong>owner-scoped cloud library</strong>. Each library request checks identity. Guest history stays on its device; cloud tracks stay out of the guest cache.</p>
+              <div class="engineering-detail"><span>OWNERSHIP</span>Browser library · optional account sync</div>
+            </article>
+          </div>
+          <div class="engineering-actions">
+            <button type="button" class="architecture-button" id="architecture-open" aria-haspopup="dialog" aria-controls="architecture-dialog" aria-expanded="false">View Architecture Diagram <span aria-hidden="true">↗</span></button>
+            <div class="engineering-source">
+              <a class="source-button" href="https://github.com/nidhichaudhari2020-hue/synesthetic-ai-composer" target="_blank" rel="noopener noreferrer">Explore GitHub Source <span aria-hidden="true">↗</span></a>
+              <span>Source &amp; tests</span>
+            </div>
+          </div>
+        </section>
+      </section>
+      <section id="library-view" hidden>
+        <div class="intro">
+          <div>
+            <p class="eyebrow">YOUR SOUND, COLLECTED</p>
+            <h1>Little worlds <em>you made.</em></h1>
+            <p class="intro-copy" id="library-description">
+              Your demo compositions stay in this browser.
+            </p>
+          </div>
+          <button class="text-button" data-tab="studio">
+            + New composition
+          </button>
+        </div>
+        <p id="library-state" class="library-state" role="status" hidden></p>
+        <div id="library-list"></div>
+      </section>
+      <footer>
+        <span class="footer-brand">auralis</span>
+        <p>Where sound becomes something you can feel.</p>
+        <span>MADE FOR THE CURIOUS <span class="mint">✳</span></span>
+      </footer>
+    </main>
+    <dialog id="about-dialog" aria-labelledby="model-notes-title">
+      <button class="dialog-close icon-button" aria-label="Close dialog">
+        ×
+      </button>
+      <p class="eyebrow">INSIDE THE INSTRUMENT</p>
+      <h2 id="model-notes-title">From chords to notes.</h2>
+      <p>
+        The featured piece was sampled from a two-layer PyTorch LSTM using Am,
+        F, C and G at temperature 0.85. Its 109 notes span 16 bars at 96 BPM.
+        The player draws each note at its pitch, start time and duration.
+      </p>
+      <div class="about-states">
+        <p>
+          <b>01 / Learn</b>Each MIDI file becomes a sequence of pitches, rests
+          and held notes on a sixteenth-note grid.
+        </p>
+        <p>
+          <b>02 / Sample</b>Your seed chords start the sequence. Higher
+          temperatures give less probable next notes more weight.
+        </p>
+        <p>
+          <b>03 / Listen</b>During playback, bass and treble from the
+          synthesizer change the movement of the particles.
+        </p>
+      </div>
+      <p class="notice" id="model-explanation">
+        The demo used 10 synthetic exercises for training and two for
+        validation. Its exported weights run in a browser worker. This small
+        corpus limits the musical styles the model can learn.
+      </p>
+      <button class="generate dialog-close">Back to the studio ↗</button>
+    </dialog>
+    <dialog id="account-dialog" aria-labelledby="account-title">
+      <button class="dialog-close icon-button" aria-label="Close dialog">
+        ×
+      </button>
+      <p class="eyebrow">YOUR PRIVATE STUDIO</p>
+      <h2 id="account-title">A space to experiment.</h2>
+      <p id="account-description">
+        This is a browser demo. Your compositions are saved on this device, and
+        no MIDI is uploaded to a server. A shared browser profile can access its
+        local demo library.
+      </p>
+      <button id="auth-action" class="generate" hidden>
+        Sign in securely ↗
+      </button>
+      <a id="hosted-signin" class="generate account-link" target="_top" hidden>Continue with ChatGPT ↗</a>
+      <a id="hosted-signout" class="account-signout" target="_top" hidden>Sign out</a>
+      <div id="firebase-account" hidden>
+        <div id="firebase-signed-out">
+          <button type="button" id="google-signin" class="account-google">Continue with Google <span aria-hidden="true">↗</span></button>
+          <p class="account-divider"><span>or use your email</span></p>
+          <form id="email-account-form">
+            <label for="account-email">Email address</label>
+            <input id="account-email" type="email" autocomplete="username" maxlength="254" required placeholder="you@example.com" />
+            <label for="account-password">Password</label>
+            <input id="account-password" type="password" autocomplete="current-password" minlength="6" maxlength="128" required placeholder="Your password" />
+            <button type="submit" id="email-submit" class="generate">Sign in with email ↗</button>
+          </form>
+          <div class="account-options">
+            <button type="button" id="email-mode" class="text-button">Create an account</button>
+            <button type="button" id="email-reset" class="text-button">Forgot password?</button>
+          </div>
+        </div>
+        <div id="firebase-verification" hidden>
+          <button type="button" id="verify-refresh" class="generate">I’ve verified my email ↗</button>
+          <button type="button" id="verify-resend" class="text-button">Resend verification email</button>
+        </div>
+        <button type="button" id="firebase-signout" class="account-signout" hidden>Sign out</button>
+      </div>
+      <p id="account-status" class="account-status" role="status" hidden></p>
+      <p class="notice" id="account-notice">
+        This offline studio runs its demo model on your device. Cloud sign-in
+        and tenant-isolated storage are available in the separately deployable
+        service.
+      </p>
+    </dialog>
+    <dialog id="architecture-dialog" class="architecture-dialog" aria-labelledby="architecture-title" aria-describedby="architecture-description">
+      <button type="button" class="architecture-close icon-button" aria-label="Close architecture diagram" autofocus>×</button>
+      <p class="eyebrow">HOW A COMPOSITION MOVES</p>
+      <h2 id="architecture-title">From training to listening.</h2>
+      <p id="architecture-description">Training happens offline. The browser downloads public model weights, then composes and plays your music locally.</p>
+      <ol class="architecture-flow" aria-label="Composition pipeline">
+        <li class="architecture-step"><span class="architecture-step-number">01 / OFFLINE</span><h3>Train the model</h3><p>Original MIDI exercises → music21 → 16th-note tokens → PyTorch LSTM.</p></li>
+        <li class="architecture-step"><span class="architecture-step-number">02 / PUBLIC ASSET</span><h3>Export weights</h3><p>Learned tensors become a versioned JSON asset served with the studio.</p></li>
+        <li class="architecture-step"><span class="architecture-step-number">03 / WEB WORKER</span><h3>Sample a melody</h3><p>Seed chords + temperature → recurrent inference → validated note events.</p></li>
+        <li class="architecture-step"><span class="architecture-step-number">04 / MAIN THREAD</span><h3>Listen &amp; see</h3><p>Web Audio synthesizes the notes. Audio frequencies drive Three.js particles.</p></li>
+      </ol>
+      <div class="architecture-storage">
+        <div><span class="architecture-step-number">LOCAL PATH</span><h3>Browser library &amp; downloads</h3><p>Guest scores → LocalStorage. Export → MIDI or WAV.</p></div>
+        <div><span class="architecture-step-number">OPTIONAL ACCOUNT PATH</span><h3>Private cloud library</h3><p id="architecture-cloud">Authenticated request → owner-scoped storage. Every library request must pass identity and ownership checks.</p></div>
+      </div>
+      <p class="architecture-footnote">A compact research demo: the model learns a single melodic voice from a small synthetic corpus. The representation does not preserve polyphony or microtiming.</p>
+      <button type="button" class="architecture-done architecture-button">Back to the studio <span aria-hidden="true">↗</span></button>
+    </dialog>
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  </body>
+</html>

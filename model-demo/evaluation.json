@@ -1,0 +1,46 @@
+{
+  "model": "lstm-synthetic-demo",
+  "checkpoint_sha256": "bcbb2c1a1e5bc680e234ef129730924d79131700c83e0b658c54701b5a01042d",
+  "manifest_sha256": "a2ab60df81bb4827fe4c1b44d13b6867e84b3197d137d214c0803dea47591635",
+  "tokenizer": "melody-grid-v1",
+  "vocab_size": 39,
+  "split_seed": 42,
+  "sequence_length": 64,
+  "train_files": 10,
+  "validation_files": 2,
+  "train_windows": 30,
+  "validation_windows": 6,
+  "train_transitions": 1920,
+  "validation_filenames": [
+    "synthetic-0007.mid",
+    "synthetic-0005.mid"
+  ],
+  "smoothing": {
+    "method": "additive",
+    "alpha": 1.0
+  },
+  "scoring": "teacher-forced next-token probabilities on identical validation windows",
+  "recorded_best_validation_cross_entropy": 2.5466721057891846,
+  "scores": {
+    "unigram": {
+      "cross_entropy_nats_per_token": 2.4557453818248383,
+      "perplexity": 11.655117824919673,
+      "predicted_tokens": 384
+    },
+    "bigram": {
+      "cross_entropy_nats_per_token": 2.1015293189841473,
+      "perplexity": 8.178668145699389,
+      "predicted_tokens": 384
+    },
+    "lstm": {
+      "cross_entropy_nats_per_token": 2.546672447520216,
+      "perplexity": 12.764558298135892,
+      "predicted_tokens": 384
+    }
+  },
+  "limitations": [
+    "Synthetic exercises from one generator.",
+    "Two validation files, also used to select the best epoch.",
+    "Token loss does not measure musical quality or originality."
+  ]
+}

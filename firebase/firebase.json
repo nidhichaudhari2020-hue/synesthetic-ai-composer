@@ -1,0 +1,38 @@
+{
+  "auth": {
+    "providers": {
+      "anonymous": false,
+      "emailPassword": true,
+      "googleSignIn": {
+        "oAuthBrandDisplayName": "Auralis",
+        "supportEmail": "nidhichaudhari2020@gmail.com",
+        "authorizedRedirectUris": [
+          "https://auralis-nidhi-composer.firebaseapp.com/__/auth/handler",
+          "https://auralis-synesthetic-composer-nidhichaudhari2020.web.app/__/auth/handler"
+        ]
+      }
+    }
+  },
+  "firestore": {
+    "database": "(default)",
+    "location": "asia-south1",
+    "rules": "firestore.rules",
+    "indexes": "firestore.indexes.json"
+  },
+  "hosting": {
+    "site": "auralis-synesthetic-composer-nidhichaudhari2020",
+    "public": "public",
+    "ignore": ["firebase.json", "**/.*", "**/node_modules/**", "_headers"],
+    "headers": [{
+      "source": "**",
+      "headers": [
+        { "key": "X-Content-Type-Options", "value": "nosniff" },
+        { "key": "Referrer-Policy", "value": "no-referrer" },
+        { "key": "Permissions-Policy", "value": "camera=(), microphone=(), geolocation=()" },
+        { "key": "Cross-Origin-Opener-Policy", "value": "same-origin-allow-popups" },
+        { "key": "Cache-Control", "value": "no-cache" },
+        { "key": "Content-Security-Policy", "value": "default-src 'self'; script-src 'self' https://apis.google.com; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self' https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://firestore.googleapis.com https://auralis-nidhi-composer.firebaseapp.com; frame-src https://auralis-nidhi-composer.firebaseapp.com https://accounts.google.com; worker-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'" }
+      ]
+    }]
+  }
+}

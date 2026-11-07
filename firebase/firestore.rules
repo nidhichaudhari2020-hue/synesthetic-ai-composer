@@ -1,0 +1,91 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Assumed data model (all fields required; no extra fields):
+    // users/{uid}: displayName string1..100 and createdAt timestamp (immutable),
+    // updatedAt timestamp; count integer0..50; revision integer0..2147483647;
+    // nextSlot integer0..9; slots map of exactly ten timestamps keyed "0".."9";
+    // lastTrackId lowercase UUID (empty only initially), lastAction none/create/delete.
+    // users/{uid}/tracks/{uuid}: title ASCII string1..100, bars16/32,
+    // tempo integer50..180, instrument piano/synth/strings, temperature0.2..1.5,
+    // tokens string of exactly bars*16 characters, createdAt server timestamp.
+    // Tracks are immutable. Every create/delete must be coupled to one metadata
+    // update in the same transaction. Accounts cannot be deleted/reset by clients.
+    // All reads/writes require the owner AND a verified-email identity.
+    function isOwner(uid) {
+      return request.auth != null && request.auth.uid == uid &&
+        request.auth.token.email_verified == true;
+    }
+    function isUuid(id) {
+      return id is string && id.matches('^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$');
+    }
+    function slotKeys() { return ['0','1','2','3','4','5','6','7','8','9']; }
+    function isValidSlots(s) {
+      return s is map && s.keys().hasAll(slotKeys()) && s.keys().hasOnly(slotKeys()) &&
+        s['0'] is timestamp && s['1'] is timestamp && s['2'] is timestamp &&
+        s['3'] is timestamp && s['4'] is timestamp && s['5'] is timestamp &&
+        s['6'] is timestamp && s['7'] is timestamp && s['8'] is timestamp && s['9'] is timestamp;
+    }
+    function isValidUser(d) {
+      let fields = ['displayName','createdAt','updatedAt','count','revision','nextSlot','slots','lastTrackId','lastAction'];
+      return d.keys().hasAll(fields) && d.keys().hasOnly(fields) &&
+        d.displayName is string && d.displayName.size() >= 1 && d.displayName.size() <= 100 &&
+        d.createdAt is timestamp && d.updatedAt is timestamp &&
+        d.count is int && d.count >= 0 && d.count <= 50 &&
+        d.revision is int && d.revision >= 0 && d.revision <= 2147483647 &&
+        d.nextSlot is int && d.nextSlot >= 0 && d.nextSlot <= 9 && isValidSlots(d.slots) &&
+        (d.lastTrackId == '' || isUuid(d.lastTrackId)) &&
+        d.lastAction in ['none','create','delete'];
+    }
+    function initialUser(d) {
+      let zero = timestamp.value(0);
+      return d.createdAt == request.time && d.updatedAt == request.time &&
+        d.count == 0 && d.revision == 0 && d.nextSlot == 0 &&
+        d.lastTrackId == '' && d.lastAction == 'none' &&
+        d.slots == {'0':zero,'1':zero,'2':zero,'3':zero,'4':zero,'5':zero,'6':zero,'7':zero,'8':zero,'9':zero};
+    }
+    function validMutation(uid, before, after) {
+      let key = slotKeys()[before.nextSlot];
+      let target = /databases/$(database)/documents/users/$(uid)/tracks/$(after.lastTrackId);
+      return after.displayName == before.displayName && after.createdAt == before.createdAt &&
+        after.updatedAt == request.time && after.revision == before.revision + 1 &&
+        after.nextSlot == (before.nextSlot + 1) % 10 && isUuid(after.lastTrackId) &&
+        before.slots[key] <= request.time - duration.value(60, 's') &&
+        after.slots.diff(before.slots).affectedKeys().hasOnly([key]) && after.slots[key] == request.time &&
+        ((after.lastAction == 'create' && after.count == before.count + 1 && !exists(target) && existsAfter(target)) ||
+         (after.lastAction == 'delete' && after.count == before.count - 1 && exists(target) && !existsAfter(target)));
+    }
+    function isValidTrack(d) {
+      let fields = ['title','bars','tempo','instrument','temperature','tokens','createdAt'];
+      return d.keys().hasAll(fields) && d.keys().hasOnly(fields) &&
+        d.title is string && d.title.matches("^[A-Za-z0-9 ,.!?()'_-]{1,100}$") &&
+        d.bars in [16,32] && d.tempo is int && d.tempo >= 50 && d.tempo <= 180 &&
+        d.instrument in ['piano','synth','strings'] &&
+        d.temperature is number && d.temperature >= 0.2 && d.temperature <= 1.5 &&
+        d.tokens is string && d.tokens.size() == d.bars * 16 &&
+        d.tokens.matches('^(0|[2-9A-Za-c]1*)+$') && d.createdAt is timestamp;
+    }
+    function coupledMutation(uid, id, action, delta) {
+      let path = /databases/$(database)/documents/users/$(uid);
+      let before = get(path).data;
+      let after = getAfter(path).data;
+      return after.lastTrackId == id && after.lastAction == action &&
+        after.revision == before.revision + 1 && after.count == before.count + delta;
+    }
+    match /users/{uid} {
+      allow get: if isOwner(uid);
+      allow list: if false;
+      allow create: if isOwner(uid) && isValidUser(request.resource.data) && initialUser(request.resource.data);
+      allow update: if isOwner(uid) && isValidUser(request.resource.data) && validMutation(uid, resource.data, request.resource.data);
+      allow delete: if false;
+      match /tracks/{id} {
+        allow read: if isOwner(uid) && exists(/databases/$(database)/documents/users/$(uid));
+        allow create: if isOwner(uid) && isUuid(id) && isValidTrack(request.resource.data) &&
+          request.resource.data.createdAt == request.time && coupledMutation(uid, id, 'create', 1);
+        allow update: if false;
+        allow delete: if isOwner(uid) && isUuid(id) && coupledMutation(uid, id, 'delete', -1);
+      }
+    }
+    match /{document=**} { allow read, write: if false; }
+  }
+}
